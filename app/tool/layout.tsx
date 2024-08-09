@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import React from 'react'
 import { Toaster } from '@/components/ui/toaster'
 import PageTransition from '@/components/layout/PageTransition'
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const beVietnamPro = Be_Vietnam_Pro({
     subsets: ['vietnamese'],
@@ -38,6 +39,7 @@ export default function ToolLayout({
                     {children}
                 </PageTransition>
                 <Toaster />
+                <SpeedInsights />
             </body>
         </html>
     )
