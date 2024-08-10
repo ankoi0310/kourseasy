@@ -10,7 +10,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow
@@ -88,30 +87,29 @@ const Tool = () => {
     }
 
     setLoading(true)
-    await getCourses(token).then((response) => {
-      if (response.isSuccess) {
-        setData(response.data.ds_nhom_to)
-        toast({
-          description: 'Lấy dữ liệu thành công'
-        })
-      } else {
-        if (response.code == 401 || response.code == 403) {
-          deleteCookie('token')
-          setLoggedInUser(null)
-        }
-        toast({
-          variant: 'destructive',
-          title: 'Lấy dữ liệu thất bại',
-          description: response.message
-        })
+    const response = await getCourses(token)
+    if (response.isSuccess) {
+      setData(response.data.ds_nhom_to)
+      toast({
+        description: 'Lấy dữ liệu thành công'
+      })
+    } else {
+      if (response.code == 401 || response.code == 403) {
+        deleteCookie('token')
+        setLoggedInUser(null)
       }
-
-      setLoading(false)
-    })
+      toast({
+        variant: 'destructive',
+        title: 'Lấy dữ liệu thất bại',
+        description: response.message
+      })
+    }
+    setLoading(false)
   }
 
   const handleRegisterCourse = async (courseId: string) => {
     registerResults.set(courseId, { result: 'registering', message: 'Đang đăng ký...' })
+    setRegisterResults(new Map(registerResults))
     const token = getCookie('token')
 
     if (!token) {
@@ -120,6 +118,8 @@ const Tool = () => {
         title: 'Chưa đăng nhập',
         description: 'Vui lòng đăng nhập để đăng ký môn học'
       })
+      registerResults.set(courseId, { result: 'error', message: '' })
+      setRegisterResults(new Map(registerResults))
       return
     }
 
@@ -129,13 +129,13 @@ const Tool = () => {
         title: 'Phiên đăng nhập đã hết hạn',
         description: 'Vui lòng đăng nhập lại'
       })
+      registerResults.set(courseId, { result: 'error', message: '' })
+      setRegisterResults(new Map(registerResults))
       return
     }
 
-    await registerCourse(token, courseId).then((response) => {
-      registerResults.set(courseId, { result: response.isSuccess ? 'success' : 'error', message: response.message })
-    })
-
+    const response = await registerCourse(token, courseId)
+    registerResults.set(courseId, { result: response.isSuccess ? 'success' : 'error', message: response.message })
     setRegisterResults(new Map(registerResults))
   }
 
@@ -245,12 +245,6 @@ const Tool = () => {
                 </TableRow>
               ))}
             </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={5}>Total</TableCell>
-                <TableCell className='text-right'>$2,500.00</TableCell>
-              </TableRow>
-            </TableFooter>
           </Table>
         </div>
       </div>
