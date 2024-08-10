@@ -19,13 +19,13 @@ export const formatCurrency = (value: number) => {
   })
 }
 
-type JwtPayload = {
-  exp: number
+export const decodeToken = (token: string): JwtPayload => {
+  return jwtDecode<JwtPayload>(token)
 }
 
 export const isTokenExpired = (token: string): boolean => {
   try {
-    const decoded = jwtDecode<JwtPayload>(token)
+    const decoded = decodeToken(token)
     return Date.now() >= decoded.exp * 1000
   } catch (error) {
     return true

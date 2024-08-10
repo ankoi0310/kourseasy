@@ -53,9 +53,26 @@ export const getCourses = async (token: string) => {
   )
 
   if (!response.ok) {
+    let message: string
+
+    switch (response.status) {
+      case 401:
+        message = 'Phiên đăng nhập đã hết hạn'
+        break
+      case 403:
+        message = 'Không thể lấy dữ liệu'
+        break
+      case 503:
+        message = 'Hệ thống đang bảo trì'
+        break
+      default:
+        message = response.statusText
+        break
+    }
     return {
       isSuccess: false,
-      message: response.statusText
+      code: response.status,
+      message: message
     }
   }
 
@@ -63,5 +80,59 @@ export const getCourses = async (token: string) => {
   return {
     isSuccess: response.ok,
     ...data
+  }
+}
+
+export const registerCourse = async (token: string, courseId: string) => {
+  const httpResponse = await fetch(
+    `${apiEndpoint}/dkmh/w-xulydkmhsinhvien`,
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'filter': {
+          'id_to_hoc': courseId,
+          'is_checked': true
+        }
+      })
+    }
+  )
+
+  if (!httpResponse.ok) {
+    let message: string
+    switch (httpResponse.status) {
+      case 401:
+        message = 'Phiên đăng nhập đã hết hạn'
+        break
+      case 403:
+        message = 'Không thể đăng ký học phần'
+        break
+      case 503:
+        message = 'Hệ thống đang bảo trì'
+        break
+      default:
+        message = httpResponse.statusText
+        break
+    }
+    return {
+      isSuccess: false,
+      message
+    }
+  }
+
+  const response = await httpResponse.json()
+  if (!response.data.is_thanh_cong) {
+    return {
+      isSuccess: false,
+      message: response.data.thong_bao_loi
+    }
+  }
+
+  return {
+    isSuccess: true,
+    message: 'Đăng ký học phần thành công'
   }
 }

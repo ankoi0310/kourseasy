@@ -1,9 +1,7 @@
 'use client'
 
 import {
-  ColumnDef,
   flexRender,
-  getCoreRowModel,
   useReactTable
 } from '@tanstack/react-table'
 
@@ -15,24 +13,18 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import React from 'react'
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+interface DataTableProps<T> {
+  table: ReturnType<typeof useReactTable<T>>
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data
-}: DataTableProps<TData, TValue>) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel()
-  })
+export function DataTable<T>({
+  table,
+}: DataTableProps<T>) {
 
   return (
-    <div className='w-full rounded-md border'>
+    <div className='rounded-md border'>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -68,7 +60,7 @@ export function DataTable<TData, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className='h-24 text-center'>
+              <TableCell colSpan={table.getAllColumns().length} className='h-24 text-center'>
                 No results.
               </TableCell>
             </TableRow>
@@ -76,5 +68,5 @@ export function DataTable<TData, TValue>({
         </TableBody>
       </Table>
     </div>
-  )
+)
 }

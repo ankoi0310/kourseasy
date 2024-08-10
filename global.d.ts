@@ -17,7 +17,20 @@ type FeatureItemProps = {
   description: string
 }
 
+type SubjectProps = {
+  ma: string
+  ten: string
+}
+
+type JwtPayloadProps = {
+  name: string
+  principal: string
+  exp: number
+}
+
 declare global {
   type PricingItem = ReadonlyProps<PricingItemProps>
   type FeatureItem = ReadonlyProps<FeatureItemProps>
+  type Subject = ReadonlyProps<SubjectProps>
+  type JwtPayload = ReadonlyProps<JwtPayloadProps>
 }
